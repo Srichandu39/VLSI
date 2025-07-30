@@ -1,0 +1,36 @@
+// DebouncerLite.v
+// This module takes a noisy input (like a mechanical button press)
+// and produces a clean, stable signal once the input stays the same
+// for several clock cycles.
+
+module DebouncerLite(
+    input clk,               // Clock signal
+    input rst,               // Active-high reset
+    input noisy_btn,         // Noisy input — e.g., from a physical button
+    output reg clean_btn     // Output — stable, debounced version of the input
+);
+
+    reg [2:0] shift_reg;     // 3-bit shift register to track recent input states
+
+    // This block runs on the rising edge of the clock or when reset is triggered
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            // Clear everything on reset
+            shift_reg <= 3'b000;
+            clean_btn <= 0;
+        end else begin
+            // Shift in the new input value (oldest bit falls off the left)
+            shift_reg <= {shift_reg[1:0], noisy_btn};
+
+            // If input has been HIGH for 3 cycles, output HIGH
+            if (shift_reg == 3'b111)
+                clean_btn <= 1;
+
+            // If input has been LOW for 3 cycles, output LOW
+            else if (shift_reg == 3'b000)
+                clean_btn <= 0;
+
+            // Otherwise, leave clean_btn unchanged (still waiting for stable state)
+        end
+    end
+endmodule
