@@ -1,0 +1,54 @@
+`timescale 1ns/1ps
+
+module DebouncerLite_tb;
+
+    reg clk, rst, noisy_btn;     // Inputs to the debouncer
+    wire clean_btn;              // Debounced output
+
+    // Instantiate the Device Under Test (DUT)
+    DebouncerLite uut (
+        .clk(clk),
+        .rst(rst),
+        .noisy_btn(noisy_btn),
+        .clean_btn(clean_btn)
+    );
+
+    // Generate waveform file for debugging/viewing in GTKWave
+    initial begin
+        $dumpfile("DebouncerLite.vcd");     // Output VCD file name
+        $dumpvars(0, DebouncerLite_tb);     // Dump all variables in this testbench
+    end
+
+    // Clock generation: 10ns period (100MHz)
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    // Stimulus block — apply test patterns to simulate button bounce
+    initial begin
+        // Start in reset
+        rst = 1;
+        noisy_btn = 0;
+        #10;
+
+        // Release reset
+        rst = 0;
+
+        // Simulate bouncing: button goes high, but not stable
+        // 1 → 0 → 1 quickly: this should NOT trigger clean_btn yet
+        noisy_btn = 1; #5;
+        noisy_btn = 0; #5;
+        noisy_btn = 1; #10;
+
+        // Hold it HIGH long enough (≥ 3 clock cycles = 30ns)
+        // This should trigger clean_btn = 1
+        noisy_btn = 1; #30;
+
+        // Hold it LOW long enough to debounce back to 0
+        noisy_btn = 0; #30;
+
+        // End simulation
+        $finish;
+    end
+endmodule
