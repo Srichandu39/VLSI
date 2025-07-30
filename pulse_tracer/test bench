@@ -1,0 +1,23 @@
+`timescale 1ns/1ps  // Time unit is 1ns, time precision is 1ps
+
+module PulseTracer_tb;
+
+    // Declare testbench signals
+    reg clk, rst, noisy_in;
+    wire pulse_out;
+
+    // Instantiate the DUT (Device Under Test)
+    PulseTracer uut (
+        .clk(clk),
+        .rst(rst),
+        .noisy_in(noisy_in),
+        .pulse_out(pulse_out)
+    );
+
+    // This block is for generating the waveform dump for viewing in a waveform viewer
+    initial begin
+        $dumpfile("PulseTracer.vcd");     // Name of the output VCD file
+        $dumpvars(0, PulseTracer_tb);     // Dump all variables in this module
+    end
+
+    // Clock generation: Tog
