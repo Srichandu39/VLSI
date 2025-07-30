@@ -1,0 +1,42 @@
+`timescale 1ns/1ps
+module SeqCheck_tb;
+
+    reg clk, rst, sig_in;     // Inputs to the DUT
+    wire detected;            // Output from the DUT
+
+    // Instantiate the module under test
+    SeqCheck uut (.clk(clk), .rst(rst), .sig_in(sig_in), .detected(detected));
+
+    // Setup waveform dump for viewing simulation in GTKWave or similar
+    initial begin
+        $dumpfile("SeqCheck.vcd");
+        $dumpvars(0);          // Dump all signals in this testbench
+    end
+
+    // Clock generation: toggles every 5ns = 10ns period
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    // Stimulus block
+    initial begin
+        rst = 1; sig_in = 0; #10;  // Apply reset for 1 clock cycle
+        rst = 0;                   // Release reset
+
+        // Sequence of inputs to test the detection of 3 consecutive 1s
+        sig_in = 1; #10;
+        sig_in = 0; #10;
+        sig_in = 1; #10;
+        sig_in = 1; #10;
+        sig_in = 1; #10;          // Should detect here
+
+        // More signals to see if detection resets properly
+        sig_in = 0; #10;
+        sig_in = 1; #10;
+        sig_in = 1; #10;
+
+        #50;                      // Wait some extra cycles for observation
+        $finish;                  // End simulation
+    end
+endmodule
