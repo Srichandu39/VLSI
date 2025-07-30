@@ -1,0 +1,21 @@
+// NibbleSwapper.v
+// This module takes an 8-bit input and swaps the upper and lower 4 bits (nibbles)
+// when the control signal is set to 1. If control is 0, it just passes the input through.
+
+module NibbleSwapper(
+    input [7:0] data_in,       // 8-bit input data
+    input ctrl,                // Control signal: when 1, swap nibbles; when 0, do nothing
+    output reg [7:0] data_out  // 8-bit output — either swapped or same as input
+);
+
+    // Combinational logic block — runs anytime data_in or ctrl changes
+    always @(*) begin
+        if (ctrl)
+            // If ctrl is 1, swap the two nibbles
+            // Upper nibble becomes lower, lower nibble becomes upper
+            data_out = {data_in[3:0], data_in[7:4]};
+        else
+            // If ctrl is 0, just pass the input unchanged
+            data_out = data_in;
+    end
+endmodule
