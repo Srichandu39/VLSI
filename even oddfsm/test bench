@@ -1,0 +1,50 @@
+`timescale 1ns/1ps
+
+module EvenOddFSM_tb;
+
+    reg clk, rst;             // Clock and reset signals
+    reg [3:0] num_in;         // 4-bit input number to test
+    wire is_even;             // Output from the FSM: 1 if even, 0 if odd
+
+    // Instantiate the FSM module (Device Under Test)
+    EvenOddFSM uut (
+        .clk(clk),
+        .rst(rst),
+        .num_in(num_in),
+        .is_even(is_even)
+    );
+
+    // Set up waveform dumping for GTKWave or any other VCD viewer
+    initial begin
+        $dumpfile("EvenOddFSM.vcd");     // Output file for waveforms
+        $dumpvars(0, EvenOddFSM_tb);     // Dump everything in this testbench
+    end
+
+    // Simple clock generator: toggles every 5ns → 10ns period (100 MHz)
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    // Main test stimulus
+    initial begin
+        // Show changes in the console during simulation
+        $monitor("Time=%0t | num_in=%d | is_even=%b", $time, num_in, is_even);
+
+        // Apply reset first — FSM should set is_even to 1 (default value)
+        rst = 1; num_in = 4'd0; #10;
+
+        // Release reset
+        rst = 0;
+
+        // Apply various inputs and observe output
+
+        num_in = 4'd3; #10;   // Odd → is_even should be 0
+        num_in = 4'd6; #10;   // Even → is_even should be 1
+        num_in = 4'd9; #10;   // Odd → is_even should be 0
+        num_in = 4'd12; #10;  // Even → is_even should be 1
+
+        // Finish the simulation
+        $finish;
+    end
+endmodule
