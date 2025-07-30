@@ -1,0 +1,32 @@
+`timescale 1ns/1ps
+
+module GrayCoder_tb;
+
+    reg [3:0] bin_in;         // 4-bit binary input to test
+    wire [3:0] gray_out;      // 4-bit Gray code output from the DUT
+
+    // Instantiate the GrayCoder module (Device Under Test)
+    GrayCoder uut (
+        .bin_in(bin_in),
+        .gray_out(gray_out)
+    );
+
+    // Set up waveform dumping for viewing in GTKWave or similar tool
+    initial begin
+        $dumpfile("GrayCoder.vcd");     // Name of VCD file for simulation
+        $dumpvars(0, GrayCoder_tb);     // Dump all variables in this testbench
+    end
+
+    // Apply a series of test inputs to the binary input
+    initial begin
+        $monitor("Time=%0t | bin_in=%b | gray_out=%b", $time, bin_in, gray_out);
+
+        bin_in = 4'b0000; #10;  // Expect gray_out = 0000
+        bin_in = 4'b0001; #10;  // Expect gray_out = 0001
+        bin_in = 4'b0011; #10;  // Expect gray_out = 0010
+        bin_in = 4'b0101; #10;  // Expect gray_out = 0111
+        bin_in = 4'b1111; #10;  // Expect gray_out = 1000
+
+        $finish;  // End the simulation
+    end
+endmodule
