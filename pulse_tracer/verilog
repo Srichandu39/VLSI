@@ -1,0 +1,29 @@
+// PulseTracer.v
+// This module detects a clean, one-clock-cycle pulse whenever a rising edge
+// occurs on a noisy input signal. It helps filter out brief glitches.
+
+module PulseTracer(
+    input clk,             // Clock input – everything happens on its rising edge
+    input rst,             // Active-high reset – clears the internal state
+    input noisy_in,        // Input signal that might have noise or glitches
+    output reg pulse_out   // Output pulse – goes high for one clock cycle on a clean rising edge
+);
+
+    reg noisy_in_d;        // Stores the previous state of noisy_in to detect rising edges
+
+    // This block runs on every rising edge of the clock, or when reset goes high
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            // If reset is active, clear the output and the delayed input
+            noisy_in_d <= 0;
+            pulse_out <= 0;
+        end else begin
+            // Shift current noisy_in into noisy_in_d for comparison next cycle
+            noisy_in_d <= noisy_in;
+
+            // If noisy_in just went from 0 to 1 (i.e., rising edge), pulse_out goes high
+            // Otherwise, it stays low. This creates a one-clock-cycle pulse.
+            pulse_out <= noisy_in & ~noisy_in_d;
+        end
+    end
+endmodule
