@@ -1,0 +1,18 @@
+// GrayCoder.v
+// This module converts a 4-bit binary number into its equivalent Gray code.
+// In Gray code, only one bit changes at a time between consecutive values —
+// useful for things like position encoders to avoid glitches.
+
+module GrayCoder(
+    input [3:0] bin_in,       // 4-bit binary input
+    output [3:0] gray_out     // 4-bit Gray code output
+);
+
+    // The Gray code is calculated by XORing the binary number with itself shifted right by one bit.
+    // For example: 
+    //   bin_in  = 4'b1011
+    //   bin_in >> 1 = 4'b0101
+    //   gray_out = 4'b1110
+    assign gray_out = bin_in ^ (bin_in >> 1);
+
+endmodule
