@@ -1,1 +1,41 @@
+`timescale 1ns/1ps
+
+module NibbleSwapper_tb;
+
+    reg [7:0] data_in;        // 8-bit input value to test
+    reg ctrl;                 // Control signal: determines whether to swap nibbles
+    wire [7:0] data_out;      // Output from the NibbleSwapper module
+
+    // Instantiate the NibbleSwapper module (our DUT)
+    NibbleSwapper uut (
+        .data_in(data_in),
+        .ctrl(ctrl),
+        .data_out(data_out)
+    );
+
+    // Enable waveform dumping so we can inspect signals in a viewer like GTKWave
+    initial begin
+        $dumpfile("NibbleSwapper.vcd");    // Name of VCD output file
+        $dumpvars(0, NibbleSwapper_tb);    // Dump everything from this module
+    end
+
+    // Test stimulus
+    initial begin
+        // Apply data = 0xAB (10101011) with ctrl = 0 (no swap expected)
+        data_in = 8'hAB; ctrl = 0; #10;
+
+        // Now enable swap — output should be 0xBA (10111010)
+        ctrl = 1; #10;
+
+        // Change input to 0x3C (00111100) while swap is still enabled
+        // Should produce 0xC3 (11000011)
+        data_in = 8'h3C; ctrl = 1; #10;
+
+        // Disable swap again — output should match input (0x3C)
+        ctrl = 0; #10;
+
+        // End the simulation
+        $finish;
+    end
+endmodule
 
