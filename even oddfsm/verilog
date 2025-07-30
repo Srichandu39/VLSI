@@ -1,0 +1,21 @@
+// EvenOddFSM.v
+// This is a super simple FSM (though it's really just logic triggered by a clock)
+// that checks whether a 4-bit number is even or odd based on its least significant bit.
+
+module EvenOddFSM(
+    input clk,              // Clock input — updates is_even on rising edge
+    input rst,              // Reset signal — active high
+    input [3:0] num_in,     // 4-bit input number to check
+    output reg is_even      // Output: 1 if number is even, 0 if odd
+);
+
+    // This block updates is_even on each rising clock edge or resets it if rst is high
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            is_even <= 1;         // On reset, we assume "even" by default (safe fallback)
+        else
+            is_even <= ~num_in[0]; // Check the least significant bit: 
+                                   // if it's 0, number is even; if it's 1, number is odd
+    end
+
+endmodule
