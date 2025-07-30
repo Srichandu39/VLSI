@@ -1,0 +1,31 @@
+`timescale 1ns/1ps
+module SeqCheck(
+    input clk,
+    input rst,
+    input sig_in,
+    output reg detected
+);
+
+    integer count;  // Counts how many consecutive 1s we've seen
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            count <= 0;        // Reset count on reset
+            detected <= 0;     // Clear detection flag
+        end else begin
+            // If input is high, increment count of consecutive 1s
+            if (sig_in)
+                count <= count + 1;
+            else
+                count <= 0;    // Reset count if input goes low
+
+            // When count reaches 3, raise detected for 1 clock cycle
+            if (count == 3) begin
+                detected <= 1;
+            end else begin
+                detected <= 0;
+            end
+        end
+    end
+endmodule
+
