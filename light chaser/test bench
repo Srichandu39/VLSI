@@ -1,0 +1,42 @@
+`timescale 1ns/1ps
+module LightChaser_tb;
+
+    reg clk, rst, enable;          // Inputs to the LightChaser module
+    wire [7:0] leds;               // Outputs from the LightChaser module (LED states)
+
+    // Instantiate the Device Under Test (DUT)
+    LightChaser uut (
+        .clk(clk),
+        .rst(rst),
+        .enable(enable),
+        .leds(leds)
+    );
+
+    // Setup waveform dumping to a file for later viewing
+    initial begin
+        $dumpfile("LightChaser.vcd");     // VCD file name
+        $dumpvars(0, LightChaser_tb);     // Dump all signals in this module
+    end
+
+    // Clock generation: toggle every 5ns, so 10ns period (100 MHz)
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    // Test stimulus block:
+    initial begin
+        rst = 1;        // Start with reset asserted
+        enable = 0;     // Disable rotation initially
+        #10;
+
+        rst = 0;        // Release reset
+        enable = 1;     // Enable LED rotation
+
+        // Wait for 10 clock cycles to observe the LED pattern rotating
+        repeat (10) #10;
+
+        $finish;        // End simulation
+    end
+
+endmodule
