@@ -1,0 +1,22 @@
+// LightChaser.v
+// This module drives a set of 8 LEDs in a rotating pattern,
+// shifting one "on" bit left each clock cycle — like the Knight Rider car lights.
+
+module LightChaser(
+    input clk,               // Clock signal
+    input rst,               // Reset signal — active high
+    input enable,            // Enable signal — starts/stops the rotation
+    output reg [7:0] leds    // Output to 8 LEDs
+);
+
+    // On every rising clock edge (or if reset is asserted):
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            // On reset, turn on just the first LED
+            leds <= 8'b0000_0001;
+        else if (enable)
+            // When enabled, shift the lit LED to the left
+            // The leftmost bit wraps around to the rightmost bit (circular shift)
+            leds <= {leds[6:0], leds[7]};
+    end
+endmodule
