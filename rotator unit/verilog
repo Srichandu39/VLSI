@@ -1,0 +1,28 @@
+// RotatorUnit.v
+// Rotates an 8-bit input either left or right on every clock cycle.
+// Direction controlled by 'dir': 0 = left rotate, 1 = right rotate.
+
+module RotatorUnit(
+    input clk,             // Clock input
+    input rst,             // Reset input (active high)
+    input dir,             // Direction: 0 = rotate left, 1 = rotate right
+    input [7:0] data_in,   // Initial data to load/reset to
+    output reg [7:0] data_out  // Rotated output data
+);
+
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            // On reset, load data_out with data_in directly
+            data_out <= data_in;
+        else begin
+            if (dir)
+                // Rotate right: take the rightmost bit (bit 0) and place it at left,
+                // shift the rest right by one
+                data_out <= {data_out[0], data_out[7:1]};
+            else
+                // Rotate left: take the leftmost bit (bit 7) and place it at right,
+                // shift the rest left by one
+                data_out <= {data_out[6:0], data_out[7]};
+        end
+    end
+endmodule
