@@ -1,0 +1,21 @@
+// BitBalancer.v
+// This module takes an 8-bit input and counts how many bits are set to 1.
+// The result is a 4-bit output showing that count.
+
+module BitBalancer(
+    input  [7:0] data_in,         // 8-bit input vector — the one we want to analyze
+    output reg [3:0] count_ones   // 4-bit output — holds the number of 1s found in data_in
+);
+
+    integer i;  // Used as a loop index for counting
+
+    // Combinational block: runs whenever data_in changes
+    always @(*) begin
+        count_ones = 0;  // Start with zero before counting
+
+        // Go through each bit of the input and add it to the count
+        for (i = 0; i < 8; i = i + 1)
+            count_ones = count_ones + data_in[i];
+            // Since data_in[i] is either 0 or 1, this just adds up the 1s
+    end
+endmodule
